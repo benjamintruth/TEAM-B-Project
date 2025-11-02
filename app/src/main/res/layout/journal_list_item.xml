@@ -3,13 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="16dp"
+    android:background="@drawable/journal_item_bg">
 
     <TextView
         android:id="@+id/journal_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:textColor="@android:color/white"
         android:textSize="16sp"
         android:maxLines="1"
         android:ellipsize="end" />
@@ -19,15 +21,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:textColor="?android:attr/textColorSecondary"
-        android:layout_marginTop="2dp" />
+        android:textColor="#B0B0B0"
+        android:layout_marginTop="4dp" />
 
     <TextView
         android:id="@+id/journal_item_content_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         android:maxLines="2"
+        android:textColor="#B0B0B0"
         android:ellipsize="end" />
 </LinearLayout>
