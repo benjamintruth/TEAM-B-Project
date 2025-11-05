@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.nav_journal, bundle)
         }
 
-        // ✅ Updated navigation listener to handle sign-out manually
+        //  Updated navigation listener to handle sign-out manually
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_sign_out -> {
