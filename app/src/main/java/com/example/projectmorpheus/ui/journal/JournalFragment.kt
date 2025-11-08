@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.projectmorpheus.R
 import android.widget.Button
+import android.widget.ImageButton
 import com.example.projectmorpheus.data.AlarmDatabase
 import com.example.projectmorpheus.data.JournalEntry
 import com.example.projectmorpheus.databinding.FragmentJournalBinding
@@ -84,7 +85,9 @@ class JournalFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_journal_entry, null)
         val titleInput = dialogView.findViewById<EditText>(R.id.journal_title_input)
         val contentInput = dialogView.findViewById<EditText>(R.id.journal_content_input)
-        val btnDelete = dialogView.findViewById<Button>(R.id.btnDelete)
+        val btnSave = dialogView.findViewById<Button>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val btnDelete = dialogView.findViewById<ImageButton>(R.id.btnDelete)
 
         // Pre-fill if editing
         entry?.let {
@@ -92,13 +95,14 @@ class JournalFragment : Fragment() {
             contentInput.setText(it.content)
             btnDelete.visibility = View.VISIBLE
         }
-
+        val titleView = dialogView.findViewById<TextView>(R.id.journal_dialog_title)
         val dialogTitle = if (entry == null) "New Journal Entry" else "Edit Journal Entry"
+        titleView.text = dialogTitle
 
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle(dialogTitle)
+            //.setTitle(dialogTitle)
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            /*.setPositiveButton("Save") { _, _ ->
                 val title = titleInput.text.toString().trim()
                 val content = contentInput.text.toString().trim()
 
@@ -110,8 +114,26 @@ class JournalFragment : Fragment() {
                     }
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Cancel", null) */
             .create()
+
+        btnSave.setOnClickListener {
+            val title = titleInput.text.toString().trim()
+            val content = contentInput.text.toString().trim()
+
+            if (title.isNotEmpty() && content.isNotEmpty()) {
+                if (entry == null) {
+                    journalViewModel.createEntry(title, content)
+                } else {
+                    journalViewModel.updateEntry(entry.id, title, content, entry.timestamp)
+                }
+                dialog.dismiss()
+            }
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
 
         // Handle Delete button manually
         btnDelete?.setOnClickListener {
