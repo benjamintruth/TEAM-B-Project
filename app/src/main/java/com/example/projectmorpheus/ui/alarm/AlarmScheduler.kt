@@ -39,7 +39,6 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("ALARM_ID", alarm.id)
             putExtra("ALARM_LABEL", alarm.label)
-            putExtra("ALARM_VIBRATE", alarm.vibrate)
             putExtra("ALARM_RINGTONE_URI", alarm.ringtoneUri)
         }
 

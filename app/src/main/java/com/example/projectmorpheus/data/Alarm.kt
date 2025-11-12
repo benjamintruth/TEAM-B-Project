@@ -17,8 +17,6 @@ data class Alarm(
 	// DEV: need to move to strings.txt
     val label: String = "Wake up",
 
-    val vibrate: Boolean = true,
-
     val ringtoneUri: String? = null  // null = default sound
 )
 

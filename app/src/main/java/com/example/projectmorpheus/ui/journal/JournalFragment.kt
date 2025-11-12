@@ -1,11 +1,6 @@
 package com.example.projectmorpheus.ui.journal
 
 import android.app.AlertDialog
-import android.content.Context
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -76,9 +71,6 @@ class JournalFragment : Fragment() {
         fab.setOnClickListener {
             showEntryDialog(null)
         }
-
-        // Stop any vibration from alarm
-        stopVibration()
 
         // Auto-open dialog if navigated from alarm dismiss
         if (arguments?.getBoolean("auto_open_entry", false) == true) {
@@ -158,36 +150,6 @@ class JournalFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-
-
-    private fun stopVibration() {
-        try {
-            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = requireContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            }
-            
-            // Replace repeating vibration with a non-repeating one that immediately ends
-            // This is more reliable than cancel() for stopping repeating waveforms
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Create a one-shot vibration of 1ms to replace the repeating one
-                vibrator.vibrate(VibrationEffect.createOneShot(1, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                // For older APIs, vibrate for 1ms
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(1)
-            }
-            
-            // Also call cancel as a backup
-            vibrator.cancel()
-        } catch (e: Exception) {
-            // Silently fail if vibrator unavailable
-            e.printStackTrace()
-        }
     }
 
     override fun onDestroyView() {

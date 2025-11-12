@@ -8,9 +8,6 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
@@ -24,7 +21,6 @@ import java.util.Locale
 class AlarmDismissActivity : AppCompatActivity() {
 
     private var ringtone: Ringtone? = null
-    private var vibrator: Vibrator? = null
     private var alarmId: Long = -1
     private var alarmLabel: String = "Wake up"
 
@@ -48,7 +44,6 @@ class AlarmDismissActivity : AppCompatActivity() {
         // Get alarm data from intent
         alarmId = intent.getLongExtra("ALARM_ID", -1)
         alarmLabel = intent.getStringExtra("ALARM_LABEL") ?: "Wake up"
-        val shouldVibrate = intent.getBooleanExtra("ALARM_VIBRATE", true)
         val ringtoneUriString = intent.getStringExtra("ALARM_RINGTONE_URI")
 
         // Set up UI
@@ -67,17 +62,6 @@ class AlarmDismissActivity : AppCompatActivity() {
 
         // Play alarm sound
         playAlarmSound(ringtoneUriString)
-
-        // Continue vibration if enabled (started in AlarmReceiver)
-        if (shouldVibrate) {
-            vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            }
-        }
 
         // Capture now button - go to journal immediately and dismiss notification
         captureNowButton.setOnClickListener {
@@ -100,7 +84,7 @@ class AlarmDismissActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopAlarmSoundAndVibration()
+        stopAlarmSound()
     }
 
     private fun playAlarmSound(ringtoneUriString: String?) {
@@ -119,36 +103,18 @@ class AlarmDismissActivity : AppCompatActivity() {
         }
     }
 
-    private fun stopAlarmSoundAndVibration() {
+    private fun stopAlarmSound() {
         // Stop ringtone
         ringtone?.stop()
         ringtone = null
-
-        // Stop vibration
-        try {
-            if (vibrator != null) {
-                // Replace repeating vibration with a non-repeating one that immediately ends
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(1, VibrationEffect.DEFAULT_AMPLITUDE))
-                } else {
-                    @Suppress("DEPRECATION")
-                    vibrator?.vibrate(1)
-                }
-                // Also call cancel as backup
-                vibrator?.cancel()
-                vibrator = null
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     /**
      * Capture dream immediately - navigate to journal and dismiss notification
      */
     private fun captureNow() {
-        // Stop sound and vibration
-        stopAlarmSoundAndVibration()
+        // Stop sound
+        stopAlarmSound()
 
         // Dismiss notification since user is capturing now
         val notificationManager = AlarmNotificationManager(this)
@@ -169,8 +135,8 @@ class AlarmDismissActivity : AppCompatActivity() {
      * Dismiss alarm only - stop alarm but KEEP notification for later capture
      */
     private fun dismissAlarmOnly() {
-        // Stop sound and vibration
-        stopAlarmSoundAndVibration()
+        // Stop sound
+        stopAlarmSound()
 
         // DO NOT dismiss notification - let it persist as a reminder
         // User can tap notification later to capture dream

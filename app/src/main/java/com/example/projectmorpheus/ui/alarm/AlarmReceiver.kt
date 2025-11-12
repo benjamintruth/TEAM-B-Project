@@ -8,9 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 
@@ -24,7 +21,6 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val alarmId = intent.getLongExtra("ALARM_ID", -1)
         val alarmLabel = intent.getStringExtra("ALARM_LABEL") ?: "Wake up"
-        val shouldVibrate = intent.getBooleanExtra("ALARM_VIBRATE", true)
         val ringtoneUri = intent.getStringExtra("ALARM_RINGTONE_URI")
 
         Log.d("AlarmReceiver", "✓ ALARM TRIGGERED! ID=$alarmId, Label=$alarmLabel")
@@ -33,16 +29,10 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationManager = AlarmNotificationManager(context)
         notificationManager.createNotificationChannel()
 
-        // Vibrate if enabled
-        if (shouldVibrate) {
-            triggerVibration(context)
-        }
-
         // PATH B: Full-screen alarm activity (immediate capture)
         val fullScreenIntent = Intent(context, AlarmDismissActivity::class.java).apply {
             putExtra("ALARM_ID", alarmId)
             putExtra("ALARM_LABEL", alarmLabel)
-            putExtra("ALARM_VIBRATE", shouldVibrate)
             putExtra("ALARM_RINGTONE_URI", ringtoneUri)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -76,7 +66,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // Post notification with unique ID
         val systemNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
- 
+
         // Check notification permission (Android 13+)
         val canNotify = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
@@ -89,26 +79,6 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.d("AlarmReceiver", "Notification posted with ID: ${notificationManager.getNotificationId(alarmId)}")
         } else {
             Log.w("AlarmReceiver", "Notification permission not granted on Android 13+.")
-        }
-    }
-
-    private fun triggerVibration(context: Context) {
-        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
-
-        // Vibrate pattern: wait 0ms, vibrate 1000ms, wait 1000ms, repeat
-        val pattern = longArrayOf(0, 1000, 1000)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(pattern, 0)
         }
     }
 }

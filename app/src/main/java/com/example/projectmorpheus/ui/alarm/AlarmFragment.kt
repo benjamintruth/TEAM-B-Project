@@ -127,11 +127,9 @@ class AlarmFragment : Fragment() {
         // Create custom dialog layout
         val dialogView = layoutInflater.inflate(R.layout.dialog_alarm_config, null)
         val labelInput = dialogView.findViewById<EditText>(R.id.alarm_label_input)
-        val vibrateSwitch = dialogView.findViewById<Switch>(R.id.vibrate_switch)
 
         // Set default values
         labelInput.setText("Wake up")
-        vibrateSwitch.isChecked = true
 
         // Build and show dialog
         AlertDialog.Builder(requireContext())
@@ -139,7 +137,6 @@ class AlarmFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
                 val label = labelInput.text.toString().ifBlank { "Wake up" }
-                val vibrate = vibrateSwitch.isChecked
 
                 // Create alarm
                 val alarm = com.example.projectmorpheus.data.Alarm(
@@ -147,7 +144,6 @@ class AlarmFragment : Fragment() {
                     minute = minute,
                     isEnabled = true,
                     label = label,
-                    vibrate = vibrate,
                     ringtoneUri = null // Use default sound for now
                 )
 

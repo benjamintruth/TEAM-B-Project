@@ -69,7 +69,6 @@ class AlarmNotificationManager(private val context: Context) {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .build()
                 )
-                enableVibration(true)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
 

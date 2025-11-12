@@ -1,11 +1,6 @@
 package com.example.projectmorpheus.ui.journal
 
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -27,9 +22,6 @@ class JournalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_journal_entry)
         title = "Capture Your Dream"
-
-        // Stop any vibration that might be running from alarm
-        stopVibration()
 
         // Add back button in action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -90,35 +82,6 @@ class JournalActivity : AppCompatActivity() {
         // Cancel
         btnCancel.setOnClickListener {
             finish()
-        }
-    }
-
-    private fun stopVibration() {
-        try {
-            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            }
-            
-            // Replace repeating vibration with a non-repeating one that immediately ends
-            // This is more reliable than cancel() for stopping repeating waveforms
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Create a one-shot vibration of 1ms to replace the repeating one
-                vibrator.vibrate(VibrationEffect.createOneShot(1, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                // For older APIs, vibrate for 1ms
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(1)
-            }
-            
-            // Also call cancel as a backup
-            vibrator.cancel()
-        } catch (e: Exception) {
-            // Silently fail if vibrator unavailable
-            e.printStackTrace()
         }
     }
 
