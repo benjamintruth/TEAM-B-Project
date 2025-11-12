@@ -74,14 +74,16 @@ class JournalFragment : Fragment() {
 
         // Auto-open dialog if navigated from alarm dismiss
         if (arguments?.getBoolean("auto_open_entry", false) == true) {
-            showEntryDialog(null)
+            val alarmLabel = arguments?.getString("alarm_label")
+            val alarmId = arguments?.getLong("alarm_id", -1L) ?: -1L
+            showEntryDialog(null, alarmLabel)
             arguments?.remove("auto_open_entry")
         }
 
         return root
     }
 
-    private fun showEntryDialog(entry: JournalEntry?) {
+    private fun showEntryDialog(entry: JournalEntry?, prefilledTitle: String? = null) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_journal_entry, null)
         val titleInput = dialogView.findViewById<EditText>(R.id.journal_title_input)
         val contentInput = dialogView.findViewById<EditText>(R.id.journal_content_input)
@@ -89,32 +91,27 @@ class JournalFragment : Fragment() {
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val btnDelete = dialogView.findViewById<ImageButton>(R.id.btnDelete)
 
-        // Pre-fill if editing
-        entry?.let {
-            titleInput.setText(it.title)
-            contentInput.setText(it.content)
+        // Pre-fill logic
+        if (entry != null) {
+            // Editing existing entry
+            titleInput.setText(entry.title)
+            contentInput.setText(entry.content)
             btnDelete.visibility = View.VISIBLE
+        } else if (prefilledTitle != null) {
+            // New entry from alarm
+            titleInput.setText(prefilledTitle)
         }
+
         val titleView = dialogView.findViewById<TextView>(R.id.journal_dialog_title)
-        val dialogTitle = if (entry == null) "New Journal Entry" else "Edit Journal Entry"
+        val dialogTitle = when {
+            entry != null -> "Edit Journal Entry"
+            prefilledTitle != null -> "Capture Your Dream"
+            else -> "New Journal Entry"
+        }
         titleView.text = dialogTitle
 
         val dialog = AlertDialog.Builder(requireContext())
-            //.setTitle(dialogTitle)
             .setView(dialogView)
-            /*.setPositiveButton("Save") { _, _ ->
-                val title = titleInput.text.toString().trim()
-                val content = contentInput.text.toString().trim()
-
-                if (title.isNotEmpty() && content.isNotEmpty()) {
-                    if (entry == null) {
-                        journalViewModel.createEntry(title, content)
-                    } else {
-                        journalViewModel.updateEntry(entry.id, title, content, entry.timestamp)
-                    }
-                }
-            }
-            .setNegativeButton("Cancel", null) */
             .create()
 
         btnSave.setOnClickListener {

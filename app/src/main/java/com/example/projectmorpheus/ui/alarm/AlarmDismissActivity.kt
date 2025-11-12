@@ -8,8 +8,6 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
@@ -23,7 +21,8 @@ import java.util.Locale
 class AlarmDismissActivity : AppCompatActivity() {
 
     private var ringtone: Ringtone? = null
-    private var vibrator: Vibrator? = null
+    private var alarmId: Long = -1
+    private var alarmLabel: String = "Wake up"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +42,15 @@ class AlarmDismissActivity : AppCompatActivity() {
         }
 
         // Get alarm data from intent
-        val alarmId = intent.getLongExtra("ALARM_ID", -1)
-        val alarmLabel = intent.getStringExtra("ALARM_LABEL") ?: "Wake up"
-        val shouldVibrate = intent.getBooleanExtra("ALARM_VIBRATE", true)
+        alarmId = intent.getLongExtra("ALARM_ID", -1)
+        alarmLabel = intent.getStringExtra("ALARM_LABEL") ?: "Wake up"
         val ringtoneUriString = intent.getStringExtra("ALARM_RINGTONE_URI")
 
         // Set up UI
         val currentTimeText = findViewById<TextView>(R.id.current_time_text)
         val alarmLabelText = findViewById<TextView>(R.id.alarm_label_text)
-        val dismissButton = findViewById<Button>(R.id.dismiss_button)
+        val captureNowButton = findViewById<Button>(R.id.capture_now_button)
+        val dismissOnlyButton = findViewById<Button>(R.id.dismiss_only_button)
 
         // Display current time
         val calendar = Calendar.getInstance()
@@ -64,34 +63,28 @@ class AlarmDismissActivity : AppCompatActivity() {
         // Play alarm sound
         playAlarmSound(ringtoneUriString)
 
-        // Continue vibration if enabled (started in AlarmReceiver)
-        if (shouldVibrate) {
-            vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            }
+        // Capture now button - go to journal immediately and dismiss notification
+        captureNowButton.setOnClickListener {
+            captureNow()
         }
 
-        // Dismiss button handler
-        dismissButton.setOnClickListener {
-            dismissAlarm()
+        // Dismiss only button - stop alarm but keep notification for later
+        dismissOnlyButton.setOnClickListener {
+            dismissAlarmOnly()
         }
     }
 
     @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onBackPressed() {
-        // Prevent dismissing with back button - user must press dismiss button
+        // Prevent dismissing with back button - user must press a button
         // This ensures they're actually awake
         // Intentionally NOT calling super.onBackPressed()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopAlarmSoundAndVibration()
+        stopAlarmSound()
     }
 
     private fun playAlarmSound(ringtoneUriString: String?) {
@@ -110,35 +103,45 @@ class AlarmDismissActivity : AppCompatActivity() {
         }
     }
 
-    private fun stopAlarmSoundAndVibration() {
+    private fun stopAlarmSound() {
         // Stop ringtone
         ringtone?.stop()
         ringtone = null
-
-        // Stop vibration
-        vibrator?.cancel()
-        vibrator = null
     }
 
-    private fun dismissAlarm() {
-        // Stop sound and vibration
-        stopAlarmSoundAndVibration()
+    /**
+     * Capture dream immediately - navigate to journal and dismiss notification
+     */
+    private fun captureNow() {
+        // Stop sound
+        stopAlarmSound()
 
-        // Cancel notification
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(AlarmReceiver.NOTIFICATION_ID)
+        // Dismiss notification since user is capturing now
+        val notificationManager = AlarmNotificationManager(this)
+        notificationManager.dismissNotification(alarmId)
 
-        // Navigate to main activity and open journal entry
+        // Navigate to main activity with all alarm data
         val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("OPEN_JOURNAL_ENTRY", true)
+            putExtra("ALARM_ID", alarmId)
+            putExtra("ALARM_LABEL", alarmLabel)
         }
-        startActivity(
-            Intent(this, MainActivity::class.java)
-                .putExtra("OPEN_JOURNAL_ENTRY", true)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        )
+        startActivity(intent)
         finish()
+    }
 
+    /**
+     * Dismiss alarm only - stop alarm but KEEP notification for later capture
+     */
+    private fun dismissAlarmOnly() {
+        // Stop sound
+        stopAlarmSound()
+
+        // DO NOT dismiss notification - let it persist as a reminder
+        // User can tap notification later to capture dream
+
+        // Just close this activity
+        finish()
     }
 }

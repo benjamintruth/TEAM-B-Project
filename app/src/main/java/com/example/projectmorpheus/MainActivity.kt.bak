@@ -50,17 +50,8 @@ class MainActivity : AppCompatActivity() {
 
         // Handle journal entry navigation from alarm dismiss
         if (intent.getBooleanExtra("OPEN_JOURNAL_ENTRY", false)) {
-            val alarmId = intent.getLongExtra("ALARM_ID", -1L)
-            val alarmLabel = intent.getStringExtra("ALARM_LABEL")
-
             val bundle = Bundle().apply {
                 putBoolean("auto_open_entry", true)
-                if (alarmLabel != null) {
-                    putString("alarm_label", alarmLabel)
-                }
-                if (alarmId > 0) {
-                    putLong("alarm_id", alarmId)
-                }
             }
             navController.navigate(R.id.nav_journal, bundle)
         }

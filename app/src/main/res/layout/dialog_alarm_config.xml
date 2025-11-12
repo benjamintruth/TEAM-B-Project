@@ -9,8 +9,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Alarm label"
-        android:layout_marginBottom="16dp">
+        android:hint="Alarm label">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/alarm_label_input"
@@ -19,26 +18,5 @@
             android:inputType="text"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Vibrate Switch -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Vibrate"
-            android:textSize="16sp"
-            android:textColor="?android:attr/textColorPrimary" />
-
-        <Switch
-            android:id="@+id/vibrate_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
 
 </LinearLayout>
