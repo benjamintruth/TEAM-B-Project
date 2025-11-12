@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@id/alarm_label_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/button_container">
+        app:layout_constraintBottom_toTopOf="@id/dismiss_button">
 
         <!-- Placeholder text for Phase 5+ puzzle implementation -->
         <TextView
@@ -61,36 +61,16 @@
             android:alpha="0.5" />
     </FrameLayout>
 
-    <!-- Button Container -->
-    <LinearLayout
-        android:id="@+id/button_container"
+    <!-- Open Journal Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/dismiss_button"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
+        android:layout_height="72dp"
+        android:text="Open Journal"
+        android:textSize="18sp"
+        app:cornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Primary action: Capture now -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/capture_now_button"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:text="Capture Dream Now"
-            android:textSize="18sp"
-            app:cornerRadius="16dp"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Secondary action: Dismiss alarm only -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/dismiss_only_button"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Dismiss Alarm"
-            android:textSize="16sp"
-            style="@style/Widget.Material3.Button.TextButton"
-            app:cornerRadius="16dp" />
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

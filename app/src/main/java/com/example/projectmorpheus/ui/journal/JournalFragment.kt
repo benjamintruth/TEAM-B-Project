@@ -1,6 +1,11 @@
 package com.example.projectmorpheus.ui.journal
 
 import android.app.AlertDialog
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -72,16 +77,21 @@ class JournalFragment : Fragment() {
             showEntryDialog(null)
         }
 
+        // Stop any vibration from alarm
+        stopVibration()
+
         // Auto-open dialog if navigated from alarm dismiss
         if (arguments?.getBoolean("auto_open_entry", false) == true) {
-            showEntryDialog(null)
+            val alarmLabel = arguments?.getString("alarm_label")
+            val alarmId = arguments?.getLong("alarm_id", -1L) ?: -1L
+            showEntryDialog(null, alarmLabel)
             arguments?.remove("auto_open_entry")
         }
 
         return root
     }
 
-    private fun showEntryDialog(entry: JournalEntry?) {
+    private fun showEntryDialog(entry: JournalEntry?, prefilledTitle: String? = null) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_journal_entry, null)
         val titleInput = dialogView.findViewById<EditText>(R.id.journal_title_input)
         val contentInput = dialogView.findViewById<EditText>(R.id.journal_content_input)
@@ -89,32 +99,27 @@ class JournalFragment : Fragment() {
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
         val btnDelete = dialogView.findViewById<ImageButton>(R.id.btnDelete)
 
-        // Pre-fill if editing
-        entry?.let {
-            titleInput.setText(it.title)
-            contentInput.setText(it.content)
+        // Pre-fill logic
+        if (entry != null) {
+            // Editing existing entry
+            titleInput.setText(entry.title)
+            contentInput.setText(entry.content)
             btnDelete.visibility = View.VISIBLE
+        } else if (prefilledTitle != null) {
+            // New entry from alarm
+            titleInput.setText(prefilledTitle)
         }
+
         val titleView = dialogView.findViewById<TextView>(R.id.journal_dialog_title)
-        val dialogTitle = if (entry == null) "New Journal Entry" else "Edit Journal Entry"
+        val dialogTitle = when {
+            entry != null -> "Edit Journal Entry"
+            prefilledTitle != null -> "Capture Your Dream"
+            else -> "New Journal Entry"
+        }
         titleView.text = dialogTitle
 
         val dialog = AlertDialog.Builder(requireContext())
-            //.setTitle(dialogTitle)
             .setView(dialogView)
-            /*.setPositiveButton("Save") { _, _ ->
-                val title = titleInput.text.toString().trim()
-                val content = contentInput.text.toString().trim()
-
-                if (title.isNotEmpty() && content.isNotEmpty()) {
-                    if (entry == null) {
-                        journalViewModel.createEntry(title, content)
-                    } else {
-                        journalViewModel.updateEntry(entry.id, title, content, entry.timestamp)
-                    }
-                }
-            }
-            .setNegativeButton("Cancel", null) */
             .create()
 
         btnSave.setOnClickListener {
@@ -153,6 +158,36 @@ class JournalFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+
+    private fun stopVibration() {
+        try {
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = requireContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+            
+            // Replace repeating vibration with a non-repeating one that immediately ends
+            // This is more reliable than cancel() for stopping repeating waveforms
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Create a one-shot vibration of 1ms to replace the repeating one
+                vibrator.vibrate(VibrationEffect.createOneShot(1, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                // For older APIs, vibrate for 1ms
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(1)
+            }
+            
+            // Also call cancel as a backup
+            vibrator.cancel()
+        } catch (e: Exception) {
+            // Silently fail if vibrator unavailable
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroyView() {
