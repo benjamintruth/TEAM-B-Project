@@ -1,109 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/homebck"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        android:layout_margin="20dp"
+        <TextView
+            android:id="@+id/welcomeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="72dp"
+            android:text="Welcome"
+            android:textColor="@android:color/white"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Month, day, year"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/welcomeText"
+            app:layout_constraintTop_toBottomOf="@id/welcomeText"/>
 
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints">
+        <!-- Journal Section -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/journalCard"
+            android:layout_width="175dp"
+            android:layout_height="200dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#4a05a1"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintTop_toBottomOf="@id/dateText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="60dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/alarmprogress1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:indeterminate="false"
-            android:progressDrawable="@drawable/progressring"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="1400"
-            android:progress="80" />
+                <ImageView
+                    android:id="@+id/journalIcon"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:contentDescription="Journal Icon Button"
+                    android:src="@drawable/ic_journal"
+                    app:tint="#190a5a" />
 
-        <ProgressBar
-            android:id="@+id/alarmprogress2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            android:indeterminate="false"
-            android:progressDrawable="@drawable/progressring"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="1400"
-            android:progress="80" />
+                <TextView
+                    android:layout_width="117dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Write Your Dream"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textColor="#8c52ff"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <ProgressBar
-            android:id="@+id/alarmprogress3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="40dp"
-            android:indeterminate="false"
-            android:progressDrawable="@drawable/progressring"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="1400"
-            android:progress="80" />
-
-        <ProgressBar
-            android:id="@+id/alarmprogress4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="60dp"
-            android:indeterminate="false"
-            android:progressDrawable="@drawable/progressring"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:max="1400"
-            android:progress="80" />
-
-
-        <ImageView
-            android:id="@+id/clockring"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:rotation="80"
-            android:contentDescription="@null"
-
-            android:src="@drawable/clockring" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/timerCard"
+            android:layout_width="175dp"
+            android:layout_height="200dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#4a05a1"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintTop_toBottomOf="@id/journalCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp">
 
 
-        <ImageView
-            android:id="@+id/hourhand"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:rotation="80"
-            android:contentDescription="@null"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="150dp"
+                    android:layout_height="160dp">
+                    <ProgressBar
+                        android:id="@+id/alarmprogress1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/progressring"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:max="1400"
+                        android:progress="80" />
 
-            android:src="@drawable/hourhand" />
+                    <ProgressBar
+                        android:id="@+id/alarmprogress2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="20dp"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/progressring"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:max="1400"
+                        android:progress="80" />
 
-        <ImageView
-            android:id="@+id/minutehand"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:rotation="0"
-            android:contentDescription="@null"
+                    <ProgressBar
+                        android:id="@+id/alarmprogress3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="40dp"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/progressring"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:max="1400"
+                        android:progress="80" />
 
-            android:src="@drawable/minutehand" />
+                    <ProgressBar
+                        android:id="@+id/alarmprogress4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="60dp"
+                        android:indeterminate="false"
+                        android:progressDrawable="@drawable/progressring"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:max="1400"
+                        android:progress="80" />
 
-        <ImageView
-            android:id="@+id/secondhand"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:rotation="220"
-            android:contentDescription="@null"
 
-            android:src="@drawable/secondhand" />
+                    <ImageView
+                        android:id="@+id/clockring"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:rotation="80"
+                        android:contentDescription="@null"
 
+                        android:src="@drawable/clockring" />
+
+
+                    <ImageView
+                        android:id="@+id/hourhand"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:rotation="80"
+                        android:contentDescription="@null"
+
+                        android:src="@drawable/hourhand" />
+
+                    <ImageView
+                        android:id="@+id/minutehand"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:rotation="0"
+                        android:contentDescription="@null"
+
+                        android:src="@drawable/minutehand" />
+
+                    <ImageView
+                        android:id="@+id/secondhand"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:rotation="220"
+                        android:contentDescription="@null"
+
+                        android:src="@drawable/secondhand" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Set an Alarm"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textColor="#8c52ff"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
