@@ -16,14 +16,7 @@
             android:id="@+id/nav_journal"
             android:icon="@drawable/ic_menu_book"
             android:title="@string/menu_journal" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+
     </group>
     <item
         android:id="@+id/nav_sign_out"

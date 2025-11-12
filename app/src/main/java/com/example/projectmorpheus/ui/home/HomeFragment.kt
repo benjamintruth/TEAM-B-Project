@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import com.example.projectmorpheus.data.AlarmDatabase
+import androidx.navigation.fragment.findNavController
 import com.example.projectmorpheus.databinding.FragmentHomeBinding
 import java.util.Calendar
 import kotlin.math.min
@@ -32,6 +33,18 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        // Ensures the date shows on the hoem screen
+        val currentDate = java.text.SimpleDateFormat("MMMM dd, yyyy", java.util.Locale.getDefault()).format(java.util.Date())
+        binding.dateText.text = currentDate
+
+        binding.journalCard.setOnClickListener {
+            findNavController().navigate(com.example.projectmorpheus.R.id.nav_journal)
+        }
+
+        binding.timerCard.setOnClickListener {
+            findNavController().navigate(com.example.projectmorpheus.R.id.nav_alarm)
+        }
 
         val hourHand: ImageView = binding.hourhand  // variables for view elements
         val minuteHand: ImageView = binding.minutehand
