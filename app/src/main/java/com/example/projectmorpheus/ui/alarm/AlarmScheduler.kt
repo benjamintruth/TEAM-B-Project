@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import com.example.projectmorpheus.MainActivity
 import com.example.projectmorpheus.data.Alarm
 import com.example.projectmorpheus.data.nextAlarmTimeMillis
 
@@ -49,14 +50,22 @@ class AlarmSchedulerImpl(private val context: Context) : AlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Use setExactAndAllowWhileIdle for compatibility with Doze mode
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            pendingIntent
+        // Create intent to show alarm list when user taps status bar icon
+        val showIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val showPendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            showIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        Log.d("AlarmScheduler", "Alarm scheduled successfully")
+        // Use setAlarmClock for highest priority and exact timing
+        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, showPendingIntent)
+        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+
+        Log.d("AlarmScheduler", "Alarm scheduled successfully with setAlarmClock()")
     }
 
     override fun cancel(alarmId: Long) {

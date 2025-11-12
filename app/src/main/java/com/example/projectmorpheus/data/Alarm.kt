@@ -29,7 +29,7 @@ fun Alarm.nextAlarmTimeMillis(): Long {
         set(Calendar.MILLISECOND, 0)
 
         // If time has passed today, schedule for tomorrow
-        if (timeInMillis <= System.currentTimeMillis()) {
+        if (timeInMillis < System.currentTimeMillis()) {
             add(Calendar.DAY_OF_MONTH, 1)
         }
     }
